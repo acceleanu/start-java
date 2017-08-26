@@ -1,0 +1,39 @@
+import org.gradle.internal.jvm.Jvm
+import org.gradle.util.GradleVersion
+
+apply plugin: 'java'
+
+version = '1.0'
+
+compileJava {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+}
+
+ext {
+    def jvmVersion = Jvm.current()
+    def gradleVersion = GradleVersion.current().getVersion()
+    
+    println("JVM=" + jvmVersion)
+    println("Gradle=" + gradleVersion)
+    println("project=" + project)
+}
+
+
+repositories {
+    mavenLocal()
+
+    maven {
+        url "https://repo1.maven.org/maven2"
+    }
+}
+
+
+dependencies {
+    compile 'com.google.guava:guava:19.0'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.assertj:assertj-core:2.2.0'
+    testCompile 'com.shazam:shazamcrest:0.11'
+}
+
+
