@@ -11,6 +11,7 @@ public class LiveOrderBoard {
     }
 
     public List<Order> registerOrder(Order order) {
+        orders.add(order);
         return orders;
     }
 
