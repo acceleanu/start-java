@@ -1,9 +1,6 @@
 package com.deltapunkt.start;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -31,6 +28,7 @@ public class LiveOrderBoard {
     public List<String> getSummary(OrderType orderType) {
         List<String> result = orders.stream()
             .filter(ot -> ot.getOrderType() == orderType)
+            .sorted(Comparator.comparing(Order::getPrice))
             .map(o -> new StringBuilder()
                 .append(o.getQuantity())
                 .append(" ")
@@ -45,7 +43,8 @@ public class LiveOrderBoard {
                         ""
                 )
                 .toString()
-            ).collect(toList());
+            )
+            .collect(toList());
         return result;
     }
 
