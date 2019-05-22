@@ -9,10 +9,12 @@ import static java.util.stream.Collectors.*;
 
 public class LiveOrderBoard {
     private final List<Order> orders;
-    private String quantityUnit = "kg";
-    private String priceCurrency = "£";
+    private final String quantityUnit;
+    private final String priceCurrency;
 
-    public LiveOrderBoard() {
+    public LiveOrderBoard(String quantityUnit, String priceCurrency) {
+        this.quantityUnit = quantityUnit;
+        this.priceCurrency = priceCurrency;
         orders = new ArrayList<>();
     }
 

@@ -18,7 +18,7 @@ public class LiveOrderBoardTest {
     public void setUp() {
         // Assume that the values for quantity and price were already transformed in the given units
         // and the units are the same for the whole board
-        unit = new LiveOrderBoard();
+        unit = new LiveOrderBoard("kg", "£");
     }
 
     @Test
@@ -80,6 +80,23 @@ public class LiveOrderBoardTest {
         assertThat(summary).containsExactly(
             "3.2 kg for £301.97",
             "11.7 kg for £303.01"
+        );
+    }
+
+    @Test
+    public void getSummaryForThreeBuyOrdersWhere2OrdersHaveTheSamePrice() {
+        Order order1 = createOrder1(BUY);
+        Order order2 = createOrder2(BUY);
+        Order order3 = createOrder3(BUY);
+        unit.registerOrder(order1);
+        unit.registerOrder(order2);
+        List<Order> orders = unit.registerOrder(order3);
+        assertThat(orders).contains(order1, order2, order3);
+
+        List<String> summary = unit.getSummary(BUY);
+        assertThat(summary).containsExactly(
+            "11.7 kg for £303.01",
+            "3.2 kg for £301.97"
         );
     }
 
