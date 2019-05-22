@@ -2,6 +2,7 @@ package com.deltapunkt.start;
 
 import java.util.*;
 
+import static com.deltapunkt.start.LiveOrderBoard.OrderType.BUY;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 
@@ -26,9 +27,14 @@ public class LiveOrderBoard {
     }
 
     public List<String> getSummary(OrderType orderType) {
+        Comparator<Order> orderComparator = Comparator.comparing(Order::getPrice);
+        if(orderType == BUY) {
+            orderComparator = orderComparator.reversed();
+        }
+
         List<String> result = orders.stream()
             .filter(ot -> ot.getOrderType() == orderType)
-            .sorted(Comparator.comparing(Order::getPrice))
+            .sorted(orderComparator)
             .map(o -> new StringBuilder()
                 .append(o.getQuantity())
                 .append(" ")

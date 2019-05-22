@@ -1,10 +1,12 @@
 package com.deltapunkt.start;
 
+import com.deltapunkt.start.LiveOrderBoard.OrderType;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
 
+import static com.deltapunkt.start.LiveOrderBoard.OrderType.BUY;
 import static com.deltapunkt.start.LiveOrderBoard.OrderType.SELL;
 import static com.deltapunkt.start.Order.createOrder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,7 +23,7 @@ public class LiveOrderBoardTest {
 
     @Test
     public void registerOneOrder() {
-        Order order = createOrder1();
+        Order order = createOrder1(SELL);
 
         List<Order> orders = unit.registerOrder(order); // make this return existing orders
 
@@ -30,7 +32,7 @@ public class LiveOrderBoardTest {
 
     @Test
     public void cancelExistingOrder() {
-        Order order = createOrder1();
+        Order order = createOrder1(SELL);
 
         List<Order> orders1 = unit.registerOrder(order);
         assertThat(orders1).containsExactly(order);
@@ -41,7 +43,7 @@ public class LiveOrderBoardTest {
 
     @Test
     public void getSummaryForASellOrder() {
-        Order order = createOrder1();
+        Order order = createOrder1(SELL);
         List<Order> orders1 = unit.registerOrder(order);
         assertThat(orders1).containsExactly(order);
 
@@ -51,8 +53,8 @@ public class LiveOrderBoardTest {
 
     @Test
     public void getSummaryForTwoSellOrders() {
-        Order order1 = createOrder1();
-        Order order2 = createOrder2();
+        Order order1 = createOrder1(SELL);
+        Order order2 = createOrder2(SELL);
         unit.registerOrder(order1);
         List<Order> orders = unit.registerOrder(order2);
         assertThat(orders).contains(order1, order2);
@@ -64,21 +66,36 @@ public class LiveOrderBoardTest {
         );
     }
 
-    private Order createOrder1() {
+    @Test
+    public void getSummaryForTwoBuyOrders() {
+        Order order1 = createOrder1(BUY);
+        Order order2 = createOrder2(BUY);
+        unit.registerOrder(order1);
+        List<Order> orders = unit.registerOrder(order2);
+        assertThat(orders).contains(order1, order2);
+
+        List<String> summary = unit.getSummary(BUY);
+        assertThat(summary).containsExactly(
+            "3.5 kg for £303.01",
+            "3.2 kg for £301.97"
+        );
+    }
+
+    private Order createOrder1(OrderType orderType) {
         return createOrder( // create order with unique id
             "userId",
             "3.5", // use BigDecimal internally to represent the quantity
             30301, // price modelled as cents in the given currency - so here we have £303
-            SELL         // use an enum to model the order type
+            orderType         // use an enum to model the order type
         );
     }
 
-    private Order createOrder2() {
+    private Order createOrder2(OrderType orderType) {
         return createOrder(
             "userId2",
             "3.2",
             30197,
-            SELL
+            orderType
         );
     }
 }
