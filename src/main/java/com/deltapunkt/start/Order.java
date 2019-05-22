@@ -18,6 +18,10 @@ public class Order {
         return new Order(id, userId, new BigDecimal(quantity), price, orderType);
     }
 
+    public UUID getId() {
+        return id;
+    }
+
     public BigDecimal getQuantity() {
         return quantity;
     }

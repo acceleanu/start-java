@@ -25,4 +25,21 @@ public class LiveOrderBoardTest {
 
         assertThat(orders).containsExactly(order);
     }
+
+    @Test
+    public void cancelExistingOrder() {
+        LiveOrderBoard unit = new LiveOrderBoard();
+        Order order = createOrder(
+            "userId",
+            "3.5",
+            30301,
+            SELL
+        );
+
+        List<Order> orders1 = unit.registerOrder(order);
+        assertThat(orders1).containsExactly(order);
+
+        List<Order> orders2 = unit.cancelOrder(order.getId());
+        assertThat(orders2).isEmpty();
+    }
 }
