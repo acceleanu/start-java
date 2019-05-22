@@ -39,6 +39,16 @@ public class LiveOrderBoardTest {
         assertThat(orders2).isEmpty();
     }
 
+    @Test
+    public void getSummaryForASellOrder() {
+        Order order = createOrder1();
+        List<Order> orders1 = unit.registerOrder(order);
+        assertThat(orders1).containsExactly(order);
+
+        List<String> summary = unit.getSummary(SELL);
+        assertThat(summary).containsExactly("3.5 kg for £303.01");
+    }
+
     private Order createOrder1() {
         return createOrder( // create order with unique id
             "userId",
