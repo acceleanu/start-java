@@ -22,7 +22,7 @@ public class LiveOrderBoard {
 
     public List<Order> cancelOrder(UUID id) {
         Optional<Order> orderMaybe = orders.stream().filter(o -> id.equals(o.getId())).findFirst();
-        orderMaybe.ifPresent((o) -> orders.remove(o));
+        orderMaybe.ifPresent(orders::remove);
         return orders;
     }
 
@@ -35,23 +35,26 @@ public class LiveOrderBoard {
         List<String> result = orders.stream()
             .filter(ot -> ot.getOrderType() == orderType)
             .sorted(orderComparator)
-            .map(o -> new StringBuilder()
-                .append(o.getQuantity())
-                .append(" ")
-                .append(quantityUnit)
-                .append(" for ")
-                .append(priceCurrency)
-                .append(o.getPrice()/100)
-                .append(
-                    o.getPrice() % 100 > 0 ?
-                        format(".%02d", o.getPrice() % 100)
-                    :
-                        ""
-                )
-                .toString()
-            )
+            .map(this::mapOrderToSummaryString)
             .collect(toList());
         return result;
+    }
+
+    private String mapOrderToSummaryString(Order o) {
+        return new StringBuilder()
+            .append(o.getQuantity())
+            .append(" ")
+            .append(quantityUnit)
+            .append(" for ")
+            .append(priceCurrency)
+            .append(o.getPrice()/100)
+            .append(
+                o.getPrice() % 100 > 0 ?
+                    format(".%02d", o.getPrice() % 100)
+                    :
+                    ""
+            )
+            .toString();
     }
 
     public enum OrderType {
