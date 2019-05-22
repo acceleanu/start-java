@@ -67,6 +67,23 @@ public class LiveOrderBoardTest {
     }
 
     @Test
+    public void getSummaryForThreeSellOrdersWhere2OrdersHaveTheSamePrice() {
+        Order order1 = createOrder1(SELL);
+        Order order2 = createOrder2(SELL);
+        Order order3 = createOrder3(SELL);
+        unit.registerOrder(order1);
+        unit.registerOrder(order2);
+        List<Order> orders = unit.registerOrder(order3);
+        assertThat(orders).contains(order1, order2, order3);
+
+        List<String> summary = unit.getSummary(SELL);
+        assertThat(summary).containsExactly(
+            "3.2 kg for £301.97",
+            "11.7 kg for £303.01"
+        );
+    }
+
+    @Test
     public void getSummaryForTwoBuyOrders() {
         Order order1 = createOrder1(BUY);
         Order order2 = createOrder2(BUY);
@@ -95,6 +112,15 @@ public class LiveOrderBoardTest {
             "userId2",
             "3.2",
             30197,
+            orderType
+        );
+    }
+
+    private Order createOrder3(OrderType orderType) {
+        return createOrder(
+            "userId3",
+            "8.2",
+            30301,
             orderType
         );
     }

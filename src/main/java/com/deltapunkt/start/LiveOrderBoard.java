@@ -1,10 +1,11 @@
 package com.deltapunkt.start;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import static com.deltapunkt.start.LiveOrderBoard.OrderType.BUY;
 import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 public class LiveOrderBoard {
     private final List<Order> orders;
@@ -27,30 +28,35 @@ public class LiveOrderBoard {
     }
 
     public List<String> getSummary(OrderType orderType) {
-        Comparator<Order> orderComparator = Comparator.comparing(Order::getPrice);
-        if(orderType == BUY) {
-            orderComparator = orderComparator.reversed();
+        Comparator<Map.Entry<Long, BigDecimal>> summaryItemComparator = Comparator.comparing(Map.Entry::getKey);
+        if (orderType == BUY) {
+            summaryItemComparator = summaryItemComparator.reversed();
         }
 
-        List<String> result = orders.stream()
+        Set<Map.Entry<Long, BigDecimal>> summaryItems = orders.stream()
             .filter(ot -> ot.getOrderType() == orderType)
-            .sorted(orderComparator)
-            .map(this::mapOrderToSummaryString)
+            .collect(groupingBy(Order::getPrice, reducing(BigDecimal.ZERO, Order::getQuantity, BigDecimal::add)))
+            .entrySet();
+
+        List<String> result = summaryItems
+            .stream()
+            .sorted(summaryItemComparator)
+            .map(this::mapSummaryItemToString)
             .collect(toList());
         return result;
     }
 
-    private String mapOrderToSummaryString(Order o) {
+    private String mapSummaryItemToString(Map.Entry<Long, BigDecimal> summaryItem) {
         return new StringBuilder()
-            .append(o.getQuantity())
+            .append(summaryItem.getValue())
             .append(" ")
             .append(quantityUnit)
             .append(" for ")
             .append(priceCurrency)
-            .append(o.getPrice()/100)
+            .append(summaryItem.getKey()/100)
             .append(
-                o.getPrice() % 100 > 0 ?
-                    format(".%02d", o.getPrice() % 100)
+                summaryItem.getKey() % 100 > 0 ?
+                    format(".%02d", summaryItem.getKey() % 100)
                     :
                     ""
             )
